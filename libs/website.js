@@ -59,7 +59,7 @@ module.exports = function(logger){
     var indexesProcessed = {};
 
     var keyScriptTemplate = '';
-    var keyScriptProcessed = ''; 
+    var keyScriptProcessed = '';
 
     process.on('message', function(message) {
         switch(message.type){
@@ -75,13 +75,29 @@ module.exports = function(logger){
                 break;
         }
     });
-    
-   
-    
+
+
+    var pageMetadatas = {
+      index: {
+        title: 'Index title',
+        description: 'Index description'
+      }
+      pagestats: {
+        title: 'Stats title',
+        description: 'Stats description'
+      }
+    };
+
 
     var processTemplates = function(){
-
         for (var pageName in pageTemplates){
+            var templateData = {
+                poolsConfigs: poolConfigs,
+                stats: portalStats.stats,
+                portalConfig: portalConfig
+            };
+            Object.assign(templateData, pageMetadatas[pageName])
+
             if (pageName === 'index') continue;
             pageProcessed[pageName] = pageTemplates[pageName]({
                 poolsConfigs: poolConfigs,
@@ -279,12 +295,12 @@ module.exports = function(logger){
 
     app.get('/api/:method/:param?', function(req, res, next){
         portalApi.handleApiRequest(req, res, next);
-        
+
     });
-    
+
     app.get('/api/:method/:algo/:address', function (req, res, next) {
         portalApi.handleApiRequest(req, res, next);
-        
+
     });
 
     app.post('/api/admin/:method', function(req, res, next){
